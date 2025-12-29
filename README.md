@@ -56,7 +56,7 @@ Està pensada com a eina d’ajuda per a:
 
 2. Obre Firefox i ves a:
 
-    ``
+    ```
     about:debugging#/runtime/this-firefox
 
 2. Carrega  `manifest.json`
@@ -70,4 +70,4 @@ Marca els canvis de manera clara.
 
 ## 📄 Llicència
 
-![Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/) (MPL 2.0)
+[Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/) (MPL 2.0)
