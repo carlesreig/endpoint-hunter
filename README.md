@@ -44,7 +44,7 @@ Està pensada com a eina d’ajuda per a:
 
 1. Clona el repositori:
    ```bash
-   git clone https://github.com/TEU-USUARI/endpoint-hunter.git
+   git clone https://github.com/carlesreig/endpoint-hunter.git
 
 2. Obre Firefox i ves a:
 
