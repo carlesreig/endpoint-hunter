@@ -40,6 +40,14 @@ Està pensada com a eina d’ajuda per a:
 
 ---
 
+## Captures de pantalla
+
+### Popup amb endpoints detectats amb informació sensible
+![Popup](screenshots/endpoints-sensible.png)
+
+### Exportant al portaretalls del sistema
+![Export & copy](screenshots/export-copy.png)
+
 ## 🛠 Instal·lació (desenvolupament)
 
 1. Clona el repositori:
@@ -48,10 +56,10 @@ Està pensada com a eina d’ajuda per a:
 
 2. Obre Firefox i ves a:
 
-    ```
+    ``
     about:debugging#/runtime/this-firefox
 
-2. Carrega manifest.json
+2. Carrega  `manifest.json`
 
 ## 🤝 Contribucions
 
@@ -62,4 +70,4 @@ Marca els canvis de manera clara.
 
 ## 📄 Llicència
 
-Pendent.
+![Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/) (MPL 2.0)
