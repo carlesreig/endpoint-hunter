@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 400px;
+    }
+    .endpoint {
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+    }
+    .method {
+      font-weight: bold;
+    }
+    .url {
+      font-size: 0.85em;
+      word-break: break-all;
+    }
+    .sensitive {
+    background: #ffe6e6;
+    border-left: 4px solid #d00;
+    padding-left: 6px;
+    }
+
+    .badge {
+    color: white;
+    background: #d00;
+    padding: 2px 6px;
+    font-size: 0.7em;
+    border-radius: 4px;
+    margin-left: 6px;
+    }
+
+    button.export {
+    margin-top: 4px;
+    font-size: 0.75em;
+    }
+    button.copy {
+    margin-left: 6px;
+    font-size: 0.75em;
+    }
+    #copyVisible {
+    margin-left: 6px;
+    }
+
+  </style>
+</head>
+<body>
+  <h3>Endpoints detectats</h3>
+  <div style="margin-bottom: 10px;">
+    <button id="toggleSensitive">Només sensibles</button>
+    <button id="copyVisible">Copia visibles</button>
+  </div>
+
+  <div id="list"></div>
+
+  <button id="clear">Esborrar historial</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
