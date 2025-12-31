@@ -17,11 +17,7 @@ let currentDomain = null;
 * HELPERS
 ****************************/
 // Extreu el domini base d'un hostname (eliminant subdominis com www)
-function getBaseDomain(hostname) {
-  const parts = hostname.toLowerCase().split('.');
-  if (parts.length <= 2) return hostname.toLowerCase(); // domini simple
-  return parts.slice(-2).join('.'); // domini + TLD
-}
+function getBaseDomain(hostname) { return EH.getBaseDomain(hostname); }
 
 // Obtenir endpoints filtrats per subdomini, tags i sensitive
 function getVisibleEndpoints() {
@@ -130,68 +126,7 @@ function createDevToolsPanel() {
 createDevToolsPanel();
 
 // Helper to obtain inspected page hostname by trying multiple properties and both callback/promise eval styles
-function getInspectedHostname() {
-  const candidates = [
-    "window.location.hostname",
-    "window.location.host",
-    "document.domain",
-    "window.location.href"
-  ];
-
-  function tryEval(expr) {
-    return new Promise((resolve) => {
-      try {
-        // Callback-style
-        browser.devtools.inspectedWindow.eval(expr, (result, exception) => {
-          if (exception) return resolve(null);
-          if (!result) return resolve(null);
-          if (typeof result === 'string') return resolve(result);
-          if (result && result.value) return resolve(result.value);
-          return resolve(null);
-        });
-      } catch (err) {
-        // Promise-style fallback
-        try {
-          const p = browser.devtools.inspectedWindow.eval(expr);
-          if (p && typeof p.then === 'function') {
-            p.then(res => {
-              if (!res) return resolve(null);
-              if (typeof res === 'string') return resolve(res);
-              if (res && res.value) return resolve(res.value);
-              return resolve(null);
-            }).catch(() => resolve(null));
-          } else {
-            resolve(null);
-          }
-        } catch (e) {
-          resolve(null);
-        }
-      }
-    });
-  }
-
-  return new Promise(async (resolve) => {
-    for (const expr of candidates) {
-      const res = await tryEval(expr);
-      if (res) {
-        // If we got a full URL from href, extract hostname
-        try {
-          const maybeUrl = res.toString();
-          if (expr === 'window.location.href' && (maybeUrl.startsWith('http') || maybeUrl.startsWith('//'))) {
-            try { const u = new URL(maybeUrl); return resolve(u.hostname); } catch {};
-          }
-          // If host contains port, strip it
-          const host = maybeUrl.split(':')[0];
-          if (host) return resolve(host);
-        } catch (e) {
-          return resolve(res);
-        }
-      }
-    }
-    // No hostname from inspected window; resolve null
-    resolve(null);
-  });
-}
+function getInspectedHostname() { return EH.getInspectedHostname(); }
 
 async function updateDomainFilter() {
   log('🔍 Actualitzant domini actiu...');
@@ -232,10 +167,7 @@ async function updateDomainFilter() {
   }
 }
 
-function formatParams(params) {
-  if (!params || !params.length) return "-";
-  return params.join(", ");
-}
+function formatParams(params) { return EH.formatParams(params); }
 
 // Create small inline SVG icons via DOM (avoid innerHTML for AMO/CSP friendliness)
 function createSVGIcon(name, w = 16, h = 16, title) {
@@ -344,7 +276,7 @@ function createEndpointDiv(e, index) {
   exportBtn.dataset.index = index;
   exportBtn.title = "Exporta";
   exportBtn.setAttribute('aria-label', 'Exporta endpoint');
-  exportBtn.appendChild(createSVGIcon('export', 16, 16, 'Exporta'));
+  exportBtn.appendChild(EH.createSVGIcon('export', 16, 16, 'Exporta'));
 
   const copyBtn = document.createElement("button");
   copyBtn.className = "icon-btn copy";

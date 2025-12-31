@@ -12,16 +12,13 @@ let showOnlySensitive = false;
 let showOnlyDomain = false;
 let allEndpoints = [];
 let currentDomain = null;
+let searchTerm = ''; 
 
 /****************************
 * HELPERS
 ****************************/
 // Extreu domini base: example.com d'un hostname com www.example.com
-function getBaseDomain(hostname) {
-  const parts = hostname.toLowerCase().split('.');
-  if (parts.length <= 2) return hostname.toLowerCase();
-  return parts.slice(-2).join('.');
-}
+function getBaseDomain(hostname) { return EH.getBaseDomain(hostname); }
 
 function getVisibleEndpoints() {
   return allEndpoints.filter(e => {
@@ -71,73 +68,30 @@ function getVisibleEndpoints() {
       }
     }
 
-    return true;
+    // Filtre de cerca (URL o params)
+    if (searchTerm) {
+      const s = String(searchTerm).toLowerCase();
+      const urlMatch = e.url && String(e.url).toLowerCase().includes(s);
+      const paramsStr = e.params ? (Array.isArray(e.params) ? e.params.join(' ') : JSON.stringify(e.params)) : '';
+      const paramsMatch = String(paramsStr).toLowerCase().includes(s);
+      log(`🔍 Search filter check: endpoint=${e.url}, search=${searchTerm}, urlMatch=${urlMatch}, paramsMatch=${paramsMatch}`);
+      if (!urlMatch && !paramsMatch) {
+        log(`⛔ Reject by search filter: endpoint=${e.url}`);
+        return false;
+      }
+    }
+
+    return true; 
   });
+}
+
+// Return visible endpoints in display order (newest first)
+function getVisibleEndpointsReversed() {
+  return getVisibleEndpoints().slice().reverse();
 }
 
 // Helper to obtain inspected page hostname by trying multiple properties and both callback/promise eval styles
-function getInspectedHostname() {
-  const candidates = [
-    "window.location.hostname",
-    "window.location.host",
-    "document.domain",
-    "window.location.href"
-  ];
-
-  function tryEval(expr) {
-    return new Promise((resolve) => {
-      try {
-        // Callback-style
-        browser.devtools.inspectedWindow.eval(expr, (result, exception) => {
-          if (exception) return resolve(null);
-          if (!result) return resolve(null);
-          if (typeof result === 'string') return resolve(result);
-          if (result && result.value) return resolve(result.value);
-          return resolve(null);
-        });
-      } catch (err) {
-        // Promise-style fallback
-        try {
-          const p = browser.devtools.inspectedWindow.eval(expr);
-          if (p && typeof p.then === 'function') {
-            p.then(res => {
-              if (!res) return resolve(null);
-              if (typeof res === 'string') return resolve(res);
-              if (res && res.value) return resolve(res.value);
-              return resolve(null);
-            }).catch(() => resolve(null));
-          } else {
-            resolve(null);
-          }
-        } catch (e) {
-          resolve(null);
-        }
-      }
-    });
-  }
-
-  return new Promise(async (resolve) => {
-    for (const expr of candidates) {
-      const res = await tryEval(expr);
-      if (res) {
-        // If we got a full URL from href, extract hostname
-        try {
-          const maybeUrl = res.toString();
-          if (expr === 'window.location.href' && (maybeUrl.startsWith('http') || maybeUrl.startsWith('//'))) {
-            try { const u = new URL(maybeUrl); return resolve(u.hostname); } catch {};
-          }
-          // If host contains port, strip it
-          const host = maybeUrl.split(':')[0];
-          if (host) return resolve(host);
-        } catch (e) {
-          return resolve(res);
-        }
-      }
-    }
-    // No hostname from inspected window; resolve null
-    resolve(null);
-  });
-}
+function getInspectedHostname() { return EH.getInspectedHostname(); }
 
 async function updateDomainFilter() {
   log('🔍 Actualitzant domini actiu...');
@@ -182,10 +136,7 @@ async function updateDomainFilter() {
   }
 }
 
-function formatParams(params) {
-  if (!params || !params.length) return "-";
-  return params.join(", ");
-}
+function formatParams(params) { return EH.formatParams(params); }
 
 // Create small inline SVG icons via DOM (avoid innerHTML for AMO/CSP friendliness)
 function createSVGIcon(name, w = 16, h = 16, title) {
@@ -232,7 +183,7 @@ function render() {
   const list = document.getElementById("list");
   list.textContent = "";
 
-  const endpointsToShow = getVisibleEndpoints();
+  const endpointsToShow = getVisibleEndpointsReversed();
 
   if (!endpointsToShow.length) {
     const em = document.createElement("em");
@@ -256,16 +207,23 @@ function createEndpointDiv(e, index) {
 
   const methodDiv = document.createElement("div");
   methodDiv.className = "method";
-  methodDiv.textContent = e.method;
+
+  // Left part: method text, badge and tags
+  const methodLeft = document.createElement('div');
+  methodLeft.className = 'method-left';
+  const methodText = document.createElement('span');
+  methodText.className = 'method-text';
+  methodText.textContent = e.method;
+  methodLeft.appendChild(methodText);
   if (e.sensitive) {
     const badge = document.createElement("span");
     badge.className = "badge sensitive-badge";
     badge.textContent = "SENSITIVE";
-    methodDiv.appendChild(document.createTextNode(" "));
-    methodDiv.appendChild(badge);
+    methodLeft.appendChild(document.createTextNode(" "));
+    methodLeft.appendChild(badge);
   }
 
-  // Render tag bubbles (xss, sqli, lfi, idor, auth)
+  // Render tag bubbles (xss, sqli, lfi, idor, auth) into left part
   const tagsDiv = document.createElement('div');
   tagsDiv.className = 'tags';
   const tagNames = { xss: 'XSS', sqli: 'SQLi', lfi: 'LFI', idor: 'IDOR', auth: 'AUTH' };
@@ -278,7 +236,17 @@ function createEndpointDiv(e, index) {
       tagsDiv.appendChild(tb);
     }
   });
-  if (tagsDiv.childElementCount) methodDiv.appendChild(tagsDiv);
+  if (tagsDiv.childElementCount) methodLeft.appendChild(tagsDiv);
+
+  // Right part: hits
+  const hitsDiv = document.createElement("div");
+  hitsDiv.className = 'hits';
+  hitsDiv.textContent = `Hits: ${e.count}`;
+  const methodRight = document.createElement('div');
+  methodRight.className = 'method-right';
+  methodRight.appendChild(hitsDiv);
+
+  methodDiv.append(methodLeft, methodRight);
 
   const urlDiv = document.createElement("div");
   urlDiv.className = "url";
@@ -287,15 +255,12 @@ function createEndpointDiv(e, index) {
   const paramsDiv = document.createElement("div");
   paramsDiv.textContent = `Params: ${formatParams(e.params)}`;
 
-  const hitsDiv = document.createElement("div");
-  hitsDiv.textContent = `Hits: ${e.count}`;
-
   const exportBtn = document.createElement("button");
   exportBtn.className = "icon-btn export";
   exportBtn.dataset.index = index;
   exportBtn.title = "Exporta";
   exportBtn.setAttribute('aria-label', 'Exporta endpoint');
-  exportBtn.appendChild(createSVGIcon('export', 16, 16, 'Exporta'));
+  exportBtn.appendChild(EH.createSVGIcon('export', 16, 16, 'Exporta'));
 
   const copyBtn = document.createElement("button");
   copyBtn.className = "icon-btn copy";
@@ -304,7 +269,18 @@ function createEndpointDiv(e, index) {
   copyBtn.setAttribute('aria-label', 'Copia endpoint');
   copyBtn.appendChild(createSVGIcon('copy', 16, 16, 'Copia'));
 
-  div.append(methodDiv, urlDiv, paramsDiv, hitsDiv, exportBtn, copyBtn);
+  // Actions column (left): export above copy (more compact)
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'endpoint-actions';
+  actionsDiv.appendChild(exportBtn);
+  actionsDiv.appendChild(copyBtn);
+
+  // Main content (right)
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'endpoint-content';
+  contentDiv.append(methodDiv, urlDiv, paramsDiv);
+
+  div.append(actionsDiv, contentDiv);
   return div;
 }
 
@@ -321,7 +297,7 @@ function bindEndpointButtons() {
 ****************************/
 function exportEndpoint(e) {
   const btn = e.currentTarget || e.target.closest && e.target.closest('button') || e.target;
-  const endpoint = getVisibleEndpoints()[btn?.dataset?.index];
+  const endpoint = getVisibleEndpointsReversed()[btn?.dataset?.index];
   if (!endpoint) return;
   const blob = new Blob([JSON.stringify(endpoint, null, 2)], { type: "application/json" });
   const urlBlob = URL.createObjectURL(blob);
@@ -334,7 +310,7 @@ function exportEndpoint(e) {
 
 function copyEndpoint(e) {
   const btn = e.currentTarget || e.target.closest && e.target.closest('button') || e.target;
-  const endpoint = getVisibleEndpoints()[btn?.dataset?.index];
+  const endpoint = getVisibleEndpointsReversed()[btn?.dataset?.index];
   if (!endpoint) return;
   const text = `${endpoint.method} --> ${endpoint.url} --> Params: ${formatParams(endpoint.params)}`;
   navigator.clipboard.writeText(text).then(() => {
@@ -349,7 +325,7 @@ function copyEndpoint(e) {
 }
 
 function copyVisibleEndpoints() {
-  const endpoints = getVisibleEndpoints();
+  const endpoints = getVisibleEndpointsReversed();
   if (!endpoints.length) return;
 
   const text = endpoints.map(e => `Method: ${e.method}\nURL: ${e.url}\nParams: ${formatParams(e.params)}`).join("\n\n");
@@ -397,6 +373,55 @@ toggleDomainBtn.addEventListener("click", async () => {
   await updateDomainFilter();
   render();
 });
+
+// Find / Search UI wiring
+const toggleFindBtn = document.getElementById("toggleAll");
+const findContainer = document.getElementById("findContainer");
+const findInput = document.getElementById("findInput");
+const clearFindBtn = document.getElementById("clearFind");
+
+if (toggleFindBtn) {
+  toggleFindBtn.addEventListener("click", () => {
+    if (!findContainer) return;
+    const hidden = findContainer.classList.contains('hidden');
+    if (hidden) {
+      findContainer.classList.remove('hidden');
+      findContainer.setAttribute('aria-hidden','false');
+      toggleFindBtn.setAttribute('aria-pressed', 'true');
+      findInput?.focus();
+    } else {
+      findContainer.classList.add('hidden');
+      findContainer.setAttribute('aria-hidden','true');
+      toggleFindBtn.setAttribute('aria-pressed', 'false');
+      searchTerm = '';
+      if (findInput) findInput.value = '';
+    }
+    render();
+  });
+}
+
+if (findInput) {
+  findInput.addEventListener("input", e => {
+    searchTerm = e.target.value.trim();
+    render();
+  });
+  findInput.addEventListener("keydown", e => {
+    if (e.key === 'Escape') {
+      searchTerm = '';
+      findInput.value = '';
+      findInput.blur();
+      render();
+    }
+  });
+}
+
+if (clearFindBtn) {
+  clearFindBtn.addEventListener("click", () => {
+    searchTerm = '';
+    if (findInput) findInput.value = '';
+    render();
+  });
+}
 
 document.getElementById("copyVisible").addEventListener("click", copyVisibleEndpoints);
 document.getElementById("clear").addEventListener("click", async () => {

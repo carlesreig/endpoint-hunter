@@ -1,19 +1,24 @@
 /****************************
-* CONFIGURACIÓ SENSIBILITAT
+* CONFIG: externalitzat a `config.js`
 ****************************/
 
-const SENSITIVE_PATHS = [
-  "/admin", "/api", "/auth", "/login", "/logout",
-  "/token", "/user", "/users", "/account",
-  "/internal", "/private", "/debug", "/graphql"
-];
+// Load configuration constants from global `ENDPOINT_HUNTER_CONFIG` (set in config.js)
+// Provide safe defaults if the config object is not present (backwards compatible).
+const _CFG = globalThis.ENDPOINT_HUNTER_CONFIG || {};
 
-const SENSITIVE_PARAMS = [
-  "token", "auth", "key", "password", "pwd",
-  "session", "jwt", "csrf"
-];
+/** @type {string[]} */
+// Use values from `config.js` (ENDPOINT_HUNTER_CONFIG). Keep empty fallback to avoid
+// duplicating the canonical defaults in multiple places.
+const SENSITIVE_PATHS = _CFG.SENSITIVE_PATHS || [];
 
-const SENSITIVE_METHODS = ["PUT", "DELETE", "PATCH"];
+/** @type {string[]} */
+const SENSITIVE_PARAMS = _CFG.SENSITIVE_PARAMS || [];
+
+/** @type {string[]} */
+const SENSITIVE_METHODS = _CFG.SENSITIVE_METHODS || [];
+
+/** @type {string[]} */
+const IGNORED_EXTENSIONS = _CFG.IGNORED_EXTENSIONS || [];
 
 const DEBUG = false;
 function bgLog(...args) { if (DEBUG) console.log(...args); }
@@ -22,50 +27,34 @@ function bgLog(...args) { if (DEBUG) console.log(...args); }
 * TAG RULES (heurístiques)
 ****************************/
 
-const TAG_RULES = {
-  xss: {
-    // Include many common search/query parameter names and potential body keys
-    params: ["q", "query", "search", "searchTerm", "term", "filter", "s", "msg", "comment", "text", "input", "body", "payload"],
-    methods: ["GET", "POST"]
-  },
-  sqli: {
-    // Common keys that may carry SQL inputs
-    params: ["id", "user", "uid", "page", "item", "order", "query", "search", "q", "where", "sql"],
-    methods: ["GET", "POST"]
-  },
-  lfi: {
-    params: ["file", "path", "template", "include"],
-    methods: ["GET"]
-  },
-  idor: {
-    params: ["id", "user_id", "account_id", "order_id"],
-    methods: ["GET", "PUT", "DELETE"]
-  },
-  auth: {
-    paths: ["/admin", "/auth", "/login", "/account", "/internal"]
-  }
-};
+// Tagging heuristics come from `config.js`. Keep object fallback empty to avoid duplicates.
+const TAG_RULES = _CFG.TAG_RULES || {}; 
 
 /****************************
 * HELPERS
 ****************************/
 
 function isSensitiveEndpoint(url, method, params) {
+  if (globalThis.ENDPOINT_HUNTER_DETECTION && typeof globalThis.ENDPOINT_HUNTER_DETECTION.isSensitiveEndpoint === 'function') {
+    return globalThis.ENDPOINT_HUNTER_DETECTION.isSensitiveEndpoint(url, method, params, _CFG);
+  }
+  // Fallback (previous inline logic)
   const path = url.pathname.toLowerCase();
   if (SENSITIVE_METHODS.includes(method)) return true;
   if (SENSITIVE_PATHS.some(p => path.includes(p))) return true;
   if (params.some(p => SENSITIVE_PARAMS.includes(p.toLowerCase()))) return true;
-
-  // Mark specific php filenames as sensitive (e.g., /login.php, /admin.php)
   if (/\/(login|admin|auth|account)\.php$/.test(path)) {
     bgLog('⚠️ Sensitive php endpoint detected:', path);
     return true;
   }
-
   return false;
 }
 
 function detectTags(url, method, params, status) {
+  if (globalThis.ENDPOINT_HUNTER_DETECTION && typeof globalThis.ENDPOINT_HUNTER_DETECTION.detectTags === 'function') {
+    return globalThis.ENDPOINT_HUNTER_DETECTION.detectTags(url, method, params, status, _CFG);
+  }
+
   const path = url.pathname.toLowerCase();
   const lowerParams = params.map(p => p.toLowerCase());
 
@@ -107,11 +96,14 @@ function detectTags(url, method, params, status) {
 }
 
 function isInteresting(details) {
+  if (globalThis.ENDPOINT_HUNTER_DETECTION && typeof globalThis.ENDPOINT_HUNTER_DETECTION.isInteresting === 'function') {
+    return globalThis.ENDPOINT_HUNTER_DETECTION.isInteresting(details, _CFG);
+  }
+
   const url = details.url.toLowerCase();
   
-  // ❌ Filtrar imatges + fonts + CSS estàtics
-  const staticMedia = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.woff', '.ttf', '.ico'];
-  if (staticMedia.some(ext => url.includes(ext))) return false;
+  // ❌ Filtrar imatges + fonts + altres arxius estàtics
+  if (IGNORED_EXTENSIONS.some(ext => url.includes(ext))) return false;
 
   // ✅ Tractar .php com a interessant (dinàmic, potencialment vulnerable)
   if (url.includes('.php')) {

@@ -8,6 +8,14 @@
 <body>
   <div id="topbar">
     <header>
+      <button id="toggleAll" class="icon-btn" title="Find" aria-label="Find" aria-pressed="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="10.5" cy="10.5" r="6.5"/>
+            <line x1="15.5" y1="15.5" x2="21" y2="21"/>
+          </g>
+        </svg>
+      </button>
       <button id="toggleSensitive" class="icon-btn" title="Només sensibles" aria-label="Només sensibles" aria-pressed="false">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -51,6 +59,11 @@
       </button>
     </header>
 
+    <div id="findContainer" class="hidden" aria-hidden="true">
+      <input id="findInput" type="search" placeholder="Filtra per text (URL o params)" aria-label="Filtra endpoints" />
+      <button id="clearFind" class="icon-btn" title="Neteja" aria-label="Neteja cerca" style="width:auto;height:auto;padding:6px;margin-left:6px;">×</button>
+    </div>
+
     <section id="filters">
       <button class="tag-filter-btn tag-xss" data-tag="xss" aria-pressed="false" title="Filtra per XSS">XSS</button>
       <button class="tag-filter-btn tag-sqli" data-tag="sqli" aria-pressed="false" title="Filtra per SQLi">SQL</button>
@@ -62,6 +75,7 @@
 
   <main id="list"></main>
 
+  <script src="shared.js"></script>
   <script src="panel.js"></script>
 </body>
 </html>
