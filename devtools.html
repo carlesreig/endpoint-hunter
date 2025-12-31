@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <title>Endpoint Hunter</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 5px; }
+    .endpoint { border-bottom: 1px solid #ccc; padding: 5px; }
+    .sensitive { background: #ffe6e6; }
+    .badge.sensitive-badge { color: red; font-weight: bold; margin-left: 5px; }
+    .method, .url, .params, .hits { margin: 2px 0; }
+    button { margin-right: 5px; padding: 4px 8px; }
+
+    @keyframes flash-bg { 0% { background-color: rgba(255,230,128,0.9); } 50% { background-color: rgba(255,230,128,0.45); } 100% { background-color: transparent; } }
+    #list.flash { animation: flash-bg 900ms ease-in-out; }
+
+    /* Tag bubble styles */
+    .tags { display: inline-flex; gap: 6px; margin-left: 8px; align-items: center; }
+    .tag-bubble { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px; color: white; font-weight: 600; letter-spacing: 0.5px; }
+    .tag-xss { background: #6f42c1; }
+    .tag-sqli { background: #17a2b8; }
+    .tag-lfi { background: #795548; }
+    .tag-idor { background: #007bff; }
+    .tag-auth { background: #ff9800; }
+
+    /* Sensitive badge styling (bubble) */
+    .badge.sensitive-badge {
+      display: inline-block;
+      background: #d00;
+      color: white;
+      padding: 2px 6px;
+      margin-left: 6px;
+      margin-right: 6px;
+      font-size: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* Tag filter buttons */
+    .tag-filter-btn { border: 1px solid #ddd; background: #fff; color: #333; padding: 3px 6px; font-size: 12px; border-radius: 8px; cursor: pointer; margin-right: 2px; }
+    .tag-filter-btn.tag-xss { border-color: #6f42c1; color: #6f42c1; }
+    .tag-filter-btn.tag-sqli { border-color: #17a2b8; color: #17a2b8; }
+    .tag-filter-btn.tag-lfi { border-color: #795548; color: #795548; }
+    .tag-filter-btn.tag-idor { border-color: #007bff; color: #007bff; }
+    .tag-filter-btn.tag-auth { border-color: #ff9800; color: #ff9800; }
+    .tag-filter-btn.tag-xss[aria-pressed="true"] { background:#6f42c1; color:#fff; border-color:#6f42c1; }
+    .tag-filter-btn.tag-sqli[aria-pressed="true"] { background:#17a2b8; color:#fff; border-color:#17a2b8; }
+    .tag-filter-btn.tag-lfi[aria-pressed="true"] { background:#795548; color:#fff; border-color:#795548; }
+    .tag-filter-btn.tag-idor[aria-pressed="true"] { background:#007bff; color:#fff; border-color:#007bff; }
+    .tag-filter-btn.tag-auth[aria-pressed="true"] { background:#ff9800; color:#fff; border-color:#ff9800; }
+  </style>
+</head>
+<body>
+  <button id="toggleSensitive" class="icon-btn" title="Només sensibles" aria-label="Només sensibles" aria-pressed="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.7 9.7-8 10-4.3-.3-8-5-8-10V6l8-4z"/></svg>
+  </button>
+  <button id="toggleDomain" class="icon-btn" title="Només domini" aria-label="Només domini" aria-pressed="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 2v2.07A7.002 7.002 0 0119.93 11H15a1 1 0 01-1-1V4zM4.07 13A7.002 7.002 0 0111 19.93V15a1 1 0 00-1-1H4.07z"/></svg>
+  </button>
+  <button id="copyVisible" class="icon-btn" title="Copia visibles" aria-label="Copia visibles">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4a2 2 0 00-2 2v12h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm-1 14H9V9h9v10z"/></svg>
+  </button>
+  <button id="clear" class="icon-btn" title="Neteja" aria-label="Neteja">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 7h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V7zm3-4h6l1 2H8l1-2z"/></svg>
+  </button>
+  <div id="filters">
+    <button class="tag-filter-btn tag-xss" data-tag="xss" aria-pressed="false" title="Filtra per XSS">XSS</button>
+    <button class="tag-filter-btn tag-sqli" data-tag="sqli" aria-pressed="false" title="Filtra per SQLi">SQL</button>
+    <button class="tag-filter-btn tag-lfi" data-tag="lfi" aria-pressed="false" title="Filtra per LFI">LFI</button>
+    <button class="tag-filter-btn tag-idor" data-tag="idor" aria-pressed="false" title="Filtra per IDOR">IDOR</button>
+    <button class="tag-filter-btn tag-auth" data-tag="auth" aria-pressed="false" title="Filtra per AUTH">AUTH</button>
+  </div>
+  <div id="list"></div>
+  <script src="devtools.js"></script>
+</body>
+</html>

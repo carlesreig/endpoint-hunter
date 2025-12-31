@@ -1,0 +1,163 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+}
+
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #f4f4f4;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+#topbar header, #topbar #filters {
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+}
+
+header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  color: #333;
+  cursor: pointer;
+}
+
+.icon-btn svg { display: block; }
+
+.icon-btn[aria-pressed="true"] {
+  background: #333;
+  color: white;
+  border-color: #222;
+}
+
+.icon-btn:hover { box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+main#list {
+  padding: 8px;
+  overflow: auto;
+  max-height: calc(100vh - 88px); /* leave room for topbar */
+  box-sizing: border-box;
+}
+
+.endpoint {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+}
+
+.endpoint.sensitive {
+  background: #fff5f5;
+}
+
+.badge {
+  display: inline-block;
+  background: #d00;
+  color: white;
+  padding: 2px 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  font-size: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tags {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  align-items: center;
+}
+
+.tag-bubble {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.tag-xss { background: #6f42c1; }
+.tag-sqli { background: #17a2b8; }
+.tag-lfi { background: #795548; }
+.tag-idor { background: #007bff; }
+.tag-auth { background: #ff9800; }
+
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 4px;
+  margin-right: 4px;
+  background: #eee;
+}
+
+/* Tag filter buttons (replace checkboxes) */
+.tag-filter-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 2px;
+}
+.tag-filter-btn[aria-pressed="true"] { box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+/* color hints for unpressed state (accent border/text) */
+.tag-filter-btn.tag-xss { border-color: #6f42c1; color: #6f42c1; }
+.tag-filter-btn.tag-sqli { border-color: #17a2b8; color: #17a2b8; }
+.tag-filter-btn.tag-lfi { border-color: #795548; color: #795548; }
+.tag-filter-btn.tag-idor { border-color: #007bff; color: #007bff; }
+.tag-filter-btn.tag-auth { border-color: #ff9800; color: #ff9800; }
+
+/* pressed state — match tag-bubble background */
+.tag-filter-btn.tag-xss[aria-pressed="true"] { background:#6f42c1; color:#fff; border-color:#6f42c1; }
+.tag-filter-btn.tag-sqli[aria-pressed="true"] { background:#17a2b8; color:#fff; border-color:#17a2b8; }
+.tag-filter-btn.tag-lfi[aria-pressed="true"] { background:#795548; color:#fff; border-color:#795548; }
+.tag-filter-btn.tag-idor[aria-pressed="true"] { background:#007bff; color:#fff; border-color:#007bff; }
+.tag-filter-btn.tag-auth[aria-pressed="true"] { background:#ff9800; color:#fff; border-color:#ff9800; }
+
+@keyframes flash-bg {
+  0% { background-color: rgba(255, 230, 128, 0.9); }
+  50% { background-color: rgba(255, 230, 128, 0.45); }
+  100% { background-color: transparent; }
+}
+
+#list.flash, main#list.flash {
+  animation: flash-bg 900ms ease-in-out;
+}
+
+/* Inline icon buttons for each endpoint (more compact) */
+.endpoint .icon-btn {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  margin-left: 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flash animation for a single endpoint row */
+.endpoint.flash {
+  animation: flash-bg 600ms ease-in-out;
+} 

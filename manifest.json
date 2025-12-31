@@ -11,14 +11,6 @@
     "96": "icons/icon-96.png"
   },
 
-  "browser_action": {
-    "default_icon": {
-      "48": "icons/icon-48.png"
-    },
-    "default_title": "Endpoint Hunter",
-    "default_popup": "popup.html"
-  },
-
   "permissions": [
     "webRequest",
     "<all_urls>",
@@ -26,6 +18,7 @@
     "tabs"
   ],
 
+  "devtools_page": "devtools.html",
   "background": {
     "scripts": ["background.js"]
   },
