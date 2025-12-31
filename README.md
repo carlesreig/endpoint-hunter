@@ -1,6 +1,6 @@
 # Endpoint Hunter 🕵️‍♂️
 
-**Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles.
+**Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles. Només has d'anar a la pàgina web i activar l'extensió, veuràs que apareixen endpoints de forma automàtica, els podràs filtrar amb el cercador o les etiquetes inteligents i exportar-ho amb un sol clic.
 
 Està pensada com a eina d’ajuda per a:
 - 🔒 Pentesting autoritzat
@@ -31,7 +31,7 @@ Està pensada com a eina d’ajuda per a:
 - Identificar rutes ocultes en aplicacions SPA
 - Detectar formularis de login o endpoints d’autenticació
 - Analitzar paràmetres interessants per testing manual
-- Enumeració d'enllaços (rutes) i mètodes HTTP
+- Enumeració d'enllaços amagats (rutes) i mètodes HTTP
 - Preparar endpoints per importar-los a Burp o altres eines per detectar vulnerabilitats com Dalfox o Nuclei
 
 ---
