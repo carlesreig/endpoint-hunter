@@ -43,13 +43,16 @@ Està pensada com a eina d’ajuda per a:
 ## Captures de pantalla
 
 ### Endpoints detectats amb informació sensible
-![Popup](screenshots/endpoints-sensible.png)
+![interesting endpoints](screenshots/endpoints-sensible.png)
 
 ### Endpoints detectats amb info sensible i del mateix domini
-![Popup](screenshots/endpoints-sensible-domain.png)
+![endpoints from domain](screenshots/endpoints-sensible-domain.png)
 
 ### Filtres d'endpoints segons possible vulnerabilitat
-![Popup](screenshots/filter-endpoints-tags.png)
+![vulns](screenshots/filter-endpoints-tags.png) ![TAGs](screenshots/filter-endpoints-tags2.png)
+
+### Cercant conceptes en endpoints trobats
+![Search filter](screenshots/find-endpoints.png)
 
 ### Exportant al portaretalls del sistema
 ![Export & copy](screenshots/export-copy.png)
