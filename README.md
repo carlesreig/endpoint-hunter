@@ -12,9 +12,12 @@ Està pensada com a eina d’ajuda per a:
 
 ## 🚀 Funcionalitats
 
-- 🔍 Detecció automàtica d’endpoints GET i POST
+- 🖥️ Interfície integrada en navegador, no intrusiva
+- 🎁 Detecció automàtica d’endpoints GET i POST
 - 🧠 Identificació d’endpoints potencialment sensibles
-- 🎯 Filtre per mostrar només endpoints sensibles
+- 🎯 Filtre per mostrar només endpoints sensibles i/o del mateix domini
+- 🏷️ Etiquetes automàtiques en endpoints, filtratge de resultats
+- 🔍 Cercador d'endpoints detectats per concepte i paràmetres
 - 📋 Còpia d’un endpoint individual
 - 📋 Còpia de tots els endpoints visibles
 - 📤 Exportació d’endpoints en format JSON
@@ -27,7 +30,8 @@ Està pensada com a eina d’ajuda per a:
 - Identificar rutes ocultes en aplicacions SPA
 - Detectar formularis de login o endpoints d’autenticació
 - Analitzar paràmetres interessants per testing manual
-- Preparar endpoints per importar-los a Burp, Postman o altres eines
+- Enumeració d'enllaços (rutes) i mètodes HTTP
+- Preparar endpoints per importar-los a Burp o altres eines per detectar vulnerabilitats com Dalfox o Nuclei
 
 ---
 
@@ -64,11 +68,12 @@ Està pensada com a eina d’ajuda per a:
    git clone https://github.com/carlesreig/endpoint-hunter.git
 
 2. Obre Firefox i ves a:
-
-    ```
+    ```bash
     about:debugging#/runtime/this-firefox
 
-2. Carrega  `manifest.json`
+3. Carrega  `manifest.json`
+
+4. Prem <kbd>F12</kbd> o bé <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> `Developer Tools` i selecciona l'extensió "Endpoint Hunter".
 
 ## 🤝 Contribucions
 
