@@ -3,18 +3,19 @@
 **Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles.
 
 Està pensada com a eina d’ajuda per a:
-- Pentesting autoritzat
-- Bug bounty
-- Formació en seguretat web
-- Anàlisi d’aplicacions web modernes
+- 🔒 Pentesting autoritzat
+- 🐞 Bug bounty
+- 🛡️ Formació en seguretat web
+- 🌐 Anàlisi d’aplicacions web modernes
 
 ---
 
 ## 🚀 Funcionalitats
 
 - 🖥️ Interfície integrada en navegador, no intrusiva
+- 🪶 Lleuger, no afecta al rendiment del navegador web
 - 🎁 Detecció automàtica d’endpoints GET i POST
-- 🧠 Identificació d’endpoints potencialment sensibles
+- 🚩 Identificació d’endpoints potencialment sensibles
 - 🎯 Filtre per mostrar només endpoints sensibles i/o del mateix domini
 - 🏷️ Etiquetes automàtiques en endpoints, filtratge de resultats
 - 🔍 Cercador d'endpoints detectats per concepte i paràmetres
