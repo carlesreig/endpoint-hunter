@@ -47,6 +47,9 @@ Està pensada com a eina d’ajuda per a:
 
 ## Captures de pantalla
 
+### Dark mode
+![dark mode](screenshots/dark-mode.png) ![light mode](screenshots/light-mode.png)
+
 ### Endpoints detectats amb informació sensible
 ![interesting endpoints](screenshots/endpoints-sensible.png)
 
