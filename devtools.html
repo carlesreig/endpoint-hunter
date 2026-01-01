@@ -4,12 +4,30 @@
   <meta charset="UTF-8">
   <title>Endpoint Hunter</title>
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 5px; }
-    .endpoint { border-bottom: 1px solid #ccc; padding: 5px; }
-    .sensitive { background: #ffe6e6; }
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --border-color: #ccc;
+      --sensitive-bg: #ffe6e6;
+      --btn-bg: #fff;
+      --btn-text: #333;
+      --btn-border: #ddd;
+    }
+    [data-theme="dark"] {
+      --bg-color: #222222;
+      --text-color: #eeeeee;
+      --border-color: #444;
+      --sensitive-bg: #4a2c2c;
+      --btn-bg: #333;
+      --btn-text: #eee;
+      --btn-border: #555;
+    }
+    body { font-family: sans-serif; margin: 0; padding: 5px; background-color: var(--bg-color); color: var(--text-color); }
+    .endpoint { border-bottom: 1px solid var(--border-color); padding: 5px; }
+    .sensitive { background: var(--sensitive-bg); }
     .badge.sensitive-badge { color: red; font-weight: bold; margin-left: 5px; }
     .method, .url, .params, .hits { margin: 2px 0; }
-    button { margin-right: 5px; padding: 4px 8px; }
+    button { margin-right: 5px; padding: 4px 8px; background-color: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border); cursor: pointer; }
 
     @keyframes flash-bg { 0% { background-color: rgba(255,230,128,0.9); } 50% { background-color: rgba(255,230,128,0.45); } 100% { background-color: transparent; } }
     #list.flash { animation: flash-bg 900ms ease-in-out; }
@@ -38,17 +56,17 @@
     }
 
     /* Tag filter buttons */
-    .tag-filter-btn { border: 1px solid #ddd; background: #fff; color: #333; padding: 3px 6px; font-size: 12px; border-radius: 8px; cursor: pointer; margin-right: 2px; }
+    .tag-filter-btn { border: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--btn-text); padding: 3px 6px; font-size: 12px; border-radius: 8px; cursor: pointer; margin-right: 2px; }
     .tag-filter-btn.tag-xss { border-color: #6f42c1; color: #6f42c1; }
     .tag-filter-btn.tag-sqli { border-color: #17a2b8; color: #17a2b8; }
     .tag-filter-btn.tag-lfi { border-color: #795548; color: #795548; }
     .tag-filter-btn.tag-idor { border-color: #007bff; color: #007bff; }
     .tag-filter-btn.tag-auth { border-color: #ff9800; color: #ff9800; }
-    .tag-filter-btn.tag-xss[aria-pressed="true"] { background:#6f42c1; color:#fff; border-color:#6f42c1; }
-    .tag-filter-btn.tag-sqli[aria-pressed="true"] { background:#17a2b8; color:#fff; border-color:#17a2b8; }
-    .tag-filter-btn.tag-lfi[aria-pressed="true"] { background:#795548; color:#fff; border-color:#795548; }
-    .tag-filter-btn.tag-idor[aria-pressed="true"] { background:#007bff; color:#fff; border-color:#007bff; }
-    .tag-filter-btn.tag-auth[aria-pressed="true"] { background:#ff9800; color:#fff; border-color:#ff9800; }
+    .tag-filter-btn.tag-xss[aria-pressed="true"] { background-color:#6f42c1 !important; color:#fff !important; border-color:#6f42c1 !important; }
+    .tag-filter-btn.tag-sqli[aria-pressed="true"] { background-color:#17a2b8 !important; color:#fff !important; border-color:#17a2b8 !important; }
+    .tag-filter-btn.tag-lfi[aria-pressed="true"] { background-color:#795548 !important; color:#fff !important; border-color:#795548 !important; }
+    .tag-filter-btn.tag-idor[aria-pressed="true"] { background-color:#007bff !important; color:#fff !important; border-color:#007bff !important; }
+    .tag-filter-btn.tag-auth[aria-pressed="true"] { background-color:#ff9800 !important; color:#fff !important; border-color:#ff9800 !important; }
   </style>
 </head>
 <body>
@@ -60,6 +78,9 @@
   </button>
   <button id="copyVisible" class="icon-btn" title="Copia visibles" aria-label="Copia visibles">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4a2 2 0 00-2 2v12h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm-1 14H9V9h9v10z"/></svg>
+  </button>
+  <button id="toggleTheme" class="icon-btn" title="Canvia tema" aria-label="Canvia tema">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
   </button>
   <button id="clear" class="icon-btn" title="Neteja" aria-label="Neteja">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 7h12v14a2 2 0 01-2 2H8a2 2 0 01-2-2V7zm3-4h6l1 2H8l1-2z"/></svg>

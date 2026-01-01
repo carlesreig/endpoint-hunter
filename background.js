@@ -34,9 +34,9 @@ const TAG_RULES = _CFG.TAG_RULES || {};
 * HELPERS
 ****************************/
 
-function isSensitiveEndpoint(url, method, params) {
+function isSensitiveEndpoint(url, method, params, responseHeaders) {
   if (globalThis.ENDPOINT_HUNTER_DETECTION && typeof globalThis.ENDPOINT_HUNTER_DETECTION.isSensitiveEndpoint === 'function') {
-    return globalThis.ENDPOINT_HUNTER_DETECTION.isSensitiveEndpoint(url, method, params, _CFG);
+    return globalThis.ENDPOINT_HUNTER_DETECTION.isSensitiveEndpoint(url, method, params, _CFG); // isSensitive no sol necessitar headers, però es podria afegir
   }
   // Fallback (previous inline logic)
   const path = url.pathname.toLowerCase();
@@ -50,9 +50,9 @@ function isSensitiveEndpoint(url, method, params) {
   return false;
 }
 
-function detectTags(url, method, params, status) {
+function detectTags(url, method, params, status, responseHeaders) {
   if (globalThis.ENDPOINT_HUNTER_DETECTION && typeof globalThis.ENDPOINT_HUNTER_DETECTION.detectTags === 'function') {
-    return globalThis.ENDPOINT_HUNTER_DETECTION.detectTags(url, method, params, status, _CFG);
+    return globalThis.ENDPOINT_HUNTER_DETECTION.detectTags(url, method, params, status, responseHeaders, _CFG);
   }
 
   const path = url.pathname.toLowerCase();
@@ -232,7 +232,7 @@ browser.webRequest.onCompleted.addListener(
     if (!endpoints.has(key)) {
       const params = Array.from(allParams);
       const sensitive = isSensitiveEndpoint(url, details.method, params);
-      const tags = detectTags(url, details.method, params, details.statusCode);
+      const tags = detectTags(url, details.method, params, details.statusCode, details.responseHeaders);
       
       endpoints.set(key, {
         method: details.method,
@@ -262,7 +262,8 @@ browser.webRequest.onCompleted.addListener(
     
     saveEndpoints();
   },
-  { urls: ["<all_urls>"] }
+  { urls: ["<all_urls>"] },
+  ["responseHeaders"]
 );
 
 /****************************

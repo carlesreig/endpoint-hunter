@@ -13,6 +13,11 @@ let showOnlyDomain = false;
 let allEndpoints = [];
 let currentDomain = null;
 
+const TAG_DISPLAY_NAMES = { 
+  xss: 'XSS', sqli: 'SQLi', lfi: 'LFI', idor: 'IDOR', 
+  auth: 'AUTH', rce: 'RCE', ssrf: 'SSRF' 
+};
+
 /****************************
 * HELPERS
 ****************************/
@@ -249,13 +254,12 @@ function createEndpointDiv(e, index) {
   // Render tag bubbles (xss, sqli, lfi, idor, auth)
   const tagsDiv = document.createElement('div');
   tagsDiv.className = 'tags';
-  const tagNames = { xss: 'XSS', sqli: 'SQLi', lfi: 'LFI', idor: 'IDOR', auth: 'AUTH' };
   Object.entries(e.tags || {}).forEach(([t, v]) => {
     if (v) {
       const tb = document.createElement('span');
       tb.className = `tag-bubble tag-${t}`;
-      tb.textContent = tagNames[t] || t.toUpperCase();
-      tb.title = tagNames[t] || t.toUpperCase();
+      tb.textContent = TAG_DISPLAY_NAMES[t] || t.toUpperCase();
+      tb.title = TAG_DISPLAY_NAMES[t] || t.toUpperCase();
       tagsDiv.appendChild(tb);
     }
   });
@@ -378,6 +382,23 @@ toggleDomainBtn2.addEventListener("click", async () => {
   render();
 });
 
+const toggleThemeBtn = document.getElementById("toggleTheme");
+if (toggleThemeBtn) {
+  toggleThemeBtn.addEventListener("click", () => {
+    const html = document.documentElement;
+    const current = html.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    browser.storage.local.set({ theme: next });
+  });
+  // Init theme
+  browser.storage.local.get("theme").then(data => {
+    if (data.theme) {
+      document.documentElement.setAttribute("data-theme", data.theme);
+    }
+  });
+}
+
 document.getElementById("copyVisible").addEventListener("click", copyVisibleEndpoints);
 document.getElementById("clear").addEventListener("click", async () => {
   await browser.runtime.sendMessage({ action: "clear-endpoints" });
@@ -393,19 +414,28 @@ function updateTagButtonsStateDevtools() {
   });
 }
 
-document.querySelectorAll('#filters .tag-filter-btn').forEach(btn => {
-  btn.addEventListener('click', e => {
-    const tag = btn.dataset.tag;
-    if (activeTags.has(tag)) {
-      activeTags.delete(tag);
-      btn.setAttribute('aria-pressed', 'false');
-    } else {
-      activeTags.add(tag);
-      btn.setAttribute('aria-pressed', 'true');
-    }
-    render();
+// Generate filter buttons dynamically based on TAG_DISPLAY_NAMES
+function initFilterButtons() {
+  const container = document.getElementById('filters');
+  if (!container) return;
+  container.innerHTML = ''; // Clear existing static buttons
+  
+  Object.entries(TAG_DISPLAY_NAMES).forEach(([tag, label]) => {
+    const btn = document.createElement('button');
+    btn.className = `tag-filter-btn tag-${tag}`;
+    btn.dataset.tag = tag;
+    btn.textContent = label;
+    btn.setAttribute('aria-pressed', String(activeTags.has(tag)));
+    btn.addEventListener('click', () => {
+      if (activeTags.has(tag)) activeTags.delete(tag);
+      else activeTags.add(tag);
+      render();
+    });
+    container.appendChild(btn);
   });
-});
+}
+
+initFilterButtons();
 
 // Call update after render
 const originalRenderDevtools = render;
