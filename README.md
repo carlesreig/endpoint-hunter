@@ -1,3 +1,5 @@
+<img width="1280" height="640" alt="header github" src="https://github.com/user-attachments/assets/a68d8ba9-77af-4a71-b8c1-69f6b94c82ec" />
+
 # Endpoint Hunter 🕵️‍♂️
 
 **Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles. Només has d'anar a la pàgina web i activar l'extensió, veuràs que apareixen endpoints de forma automàtica, els podràs filtrar amb el cercador o les etiquetes inteligents i exportar-ho amb un sol clic.
