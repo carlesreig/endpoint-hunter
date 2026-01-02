@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
   "name": "Endpoint Hunter",
-  "version": "0.2.2",
-  "description": "Detecta endpoints interessants mentre navegues",
+  "version": "0.3.0",
+  "description": "__MSG_appDescription__",
+  "default_locale": "ca",
   "author": "DrPeCe",
   "homepage_url": "https://github.com/carlesreig/endpoint-hunter",
 
@@ -18,9 +19,13 @@
     "tabs"
   ],
 
-  "devtools_page": "devtools.html",
+  "devtools_page": "src/devtools/devtools.html",
   "background": {
-    "scripts": ["config.js", "detection.js", "background.js"]
+    "scripts": [
+      "src/lib/config.js",
+      "src/lib/detection.js",
+      "src/background/background.js"
+    ]
   },
 
   "browser_specific_settings": {

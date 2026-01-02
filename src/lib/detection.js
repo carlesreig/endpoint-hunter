@@ -82,9 +82,9 @@
 
     // XSS: Params típics + HTML + CSP dèbil
     const isHtml = contentType.includes('text/html');
-    const isWeakCsp = !csp || csp.includes('unsafe-inline') || csp.includes('unsafe-eval');
     const xssParamMatch = lowerParams.some(p => xssParams.includes(p));
-    const xssContext = isHtml && isWeakCsp;
+    // Relaxed: Tag potential XSS vectors regardless of CSP (CSP is a mitigation, not a fix for the vector)
+    const xssContext = isHtml;
     const xssDetected = xssMethods.includes(method) && (
       valueLooksLikeXss || // Payload explícit
       (xssParamMatch && xssContext) || // Param típic en context vulnerable
@@ -137,8 +137,7 @@
   }
 
   function isInteresting(details = {}, cfg = _CFG) {
-    const urlStr = details.url || details.
-    url || '';
+    const urlStr = details.url || '';
     const type = details.type || '';
     const method = details.method || 'GET';
     const urlLower = String(urlStr).toLowerCase();

@@ -29,7 +29,7 @@ var ENDPOINT_HUNTER_CONFIG = ENDPOINT_HUNTER_CONFIG || {
   // Tagging heuristics (params, methods, paths)
   TAG_RULES: {
     xss: {
-      params: ['q', 'query', 'search', 'searchTerm', 'term', 'filter', 's', 'msg', 'comment', 'text', 'input', 'body', 'payload'],
+      params: ['q', 'query', 'search', 'searchTerm', 'term', 'filter', 's', 'msg', 'comment', 'text', 'input', 'body', 'payload', 'combine', 'keys'],
       methods: ['GET', 'POST']
     },
     sqli: {

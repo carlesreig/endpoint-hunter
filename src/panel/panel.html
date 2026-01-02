@@ -8,7 +8,7 @@
 <body>
   <div id="topbar">
     <header>
-      <button id="toggleAll" class="icon-btn" title="Find" aria-label="Find" aria-pressed="false">
+      <button id="toggleAll" class="icon-btn" title="btnFind" aria-label="btnFind" aria-pressed="false" data-i18n-title="btnFind">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="10.5" cy="10.5" r="6.5"/>
@@ -16,7 +16,7 @@
           </g>
         </svg>
       </button>
-      <button id="toggleSensitive" class="icon-btn" title="Només sensibles" aria-label="Només sensibles" aria-pressed="false">
+      <button id="toggleSensitive" class="icon-btn" title="btnSensitive" aria-label="btnSensitive" aria-pressed="false" data-i18n-title="btnSensitive">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <path
             d="M12 2l8 4v6c0 5-3.7 9.7-8 10-4.3-.3-8-5-8-10V6l8-4z"
@@ -27,7 +27,7 @@
           />
         </svg>
       </button>
-      <button id="toggleDomain" class="icon-btn" title="Només domini" aria-label="Només domini" aria-pressed="false">
+      <button id="toggleDomain" class="icon-btn" title="btnDomain" aria-label="btnDomain" aria-pressed="false" data-i18n-title="btnDomain">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
             <circle cx="12" cy="12" r="9"/>
@@ -36,7 +36,7 @@
           </g>
         </svg>
       </button>
-      <button id="copyVisible" class="icon-btn" title="Copia visibles" aria-label="Copia visibles">
+      <button id="copyVisible" class="icon-btn" title="btnCopyVisible" aria-label="btnCopyVisible" data-i18n-title="btnCopyVisible">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
             <rect x="4" y="3" width="12" height="14" rx="1"/>
@@ -44,10 +44,10 @@
           </g>
         </svg>
       </button>
-      <button id="toggleTheme" class="icon-btn" title="Canvia tema" aria-label="Canvia tema">
+      <button id="toggleTheme" class="icon-btn" title="btnTheme" aria-label="btnTheme" data-i18n-title="btnTheme">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
       </button>
-      <button id="clear" class="icon-btn" title="Esborra" aria-label="Esborra">
+      <button id="clear" class="icon-btn" title="btnClear" aria-label="btnClear" data-i18n-title="btnClear">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="6" y="7" width="12" height="14" rx="2"/>
@@ -63,8 +63,8 @@
     </header>
 
     <div id="findContainer" class="hidden" aria-hidden="true">
-      <input id="findInput" type="search" placeholder="Filtra per text (URL o params)" aria-label="Filtra endpoints" />
-      <button id="clearFind" class="icon-btn" title="Neteja" aria-label="Neteja cerca" style="width:auto;height:auto;padding:6px;margin-left:6px;">×</button>
+      <input id="findInput" type="search" placeholder="placeholderFind" aria-label="placeholderFind" data-i18n-placeholder="placeholderFind" />
+      <button id="clearFind" class="icon-btn" title="Neteja" aria-label="Neteja cerca" style="width:auto;height:auto;padding:6px;margin-left:6px;" data-i18n-title="btnClearFind">×</button>
     </div>
 
     <section id="filters">
@@ -78,7 +78,9 @@
 
   <main id="list"></main>
 
-  <script src="shared.js"></script>
   <script src="panel.js"></script>
+  <script src="../lib/config.js"></script>
+  <script src="../lib/detection.js"></script>
+  <script src="../lib/shared.js"></script>
 </body>
 </html>

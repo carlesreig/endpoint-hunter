@@ -22,8 +22,27 @@ const TAG_DISPLAY_NAMES = {
 /****************************
 * HELPERS
 ****************************/
+// Helper i18n
+function i18n(key, fallback) {
+  return browser.i18n.getMessage(key) || fallback;
+}
+
+function localizePage() {
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const msg = i18n(el.dataset.i18nTitle);
+    if (msg) {
+      el.title = msg;
+      el.setAttribute('aria-label', msg);
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const msg = i18n(el.dataset.i18nPlaceholder);
+    if (msg) el.placeholder = msg;
+  });
+}
+
 // Extreu domini base: example.com d'un hostname com www.example.com
-function getBaseDomain(hostname) { return EH.getBaseDomain(hostname); }
+function getBaseDomain(hostname) { return getBaseDomain(hostname); }
 
 function getVisibleEndpoints() {
   return allEndpoints.filter(e => {
@@ -98,6 +117,59 @@ function getVisibleEndpointsReversed() {
 // Helper to obtain inspected page hostname by trying multiple properties and both callback/promise eval styles
 function getInspectedHostname() { return EH.getInspectedHostname(); }
 
+// Check if parameter values are reflected in the current page DOM
+// Optimized: Search happens inside the page context to avoid transferring huge HTML strings.
+async function checkReflections() {
+  const endpoints = getVisibleEndpoints();
+  const valuesToSearch = [];
+  const mapValueToParam = {}; // value -> { endpointIndex, paramName }
+
+  endpoints.forEach(e => {
+    if (!e.latestValues) return;
+    Object.entries(e.latestValues).forEach(([param, value]) => {
+      if (value && value.length > 3) { // Ignore short noise
+        const vLower = value.toLowerCase();
+        valuesToSearch.push(vLower);
+        if (!mapValueToParam[vLower]) mapValueToParam[vLower] = [];
+        mapValueToParam[vLower].push({ endpoint: e, param });
+      }
+    });
+  });
+
+  if (!valuesToSearch.length) return;
+
+  // Safe eval: JSON.stringify ensures values are treated as data, not code.
+  const expr = `(function() {
+    const html = document.documentElement.outerHTML.toLowerCase();
+    const needles = ${JSON.stringify(valuesToSearch)};
+    return needles.filter(n => html.includes(n));
+  })()`;
+
+  browser.devtools.inspectedWindow.eval(expr, (matches, err) => {
+    if (err || !matches || !matches.length) return;
+    
+    let changed = false;
+    matches.forEach(match => {
+      const entries = mapValueToParam[match];
+      if (entries) {
+        entries.forEach(entry => {
+          // Activar tag XSS si es detecta reflexió
+          if (!entry.endpoint.tags) entry.endpoint.tags = {};
+          if (!entry.endpoint.tags.xss) {
+            entry.endpoint.tags.xss = true;
+            changed = true;
+          }
+          if (!entry.endpoint.reflectedParams) entry.endpoint.reflectedParams = [];
+          if (!entry.endpoint.reflectedParams.includes(entry.param)) {
+            entry.endpoint.reflectedParams.push(entry.param);
+          }
+        });
+      }
+    });
+    if (changed) render();
+  });
+}
+
 async function updateDomainFilter() {
   log('🔍 Actualitzant domini actiu...');
   try {
@@ -106,6 +178,7 @@ async function updateDomainFilter() {
       currentDomain = getBaseDomain(hostname);
       log(`✅ Domini actiu base (from inspected host): ${currentDomain} (inspected host: ${hostname})`);
       render();
+      checkReflections();
       return true;
     }
 
@@ -124,6 +197,7 @@ async function updateDomainFilter() {
         currentDomain = entries[0][0];
         log(`✅ Domini actiu base (derived from endpoints): ${currentDomain}`);
         render();
+        checkReflections();
         return true;
       }
     } catch (e) {
@@ -192,7 +266,7 @@ function render() {
 
   if (!endpointsToShow.length) {
     const em = document.createElement("em");
-    em.textContent = "No hi ha endpoints per mostrar";
+    em.textContent = i18n("noEndpoints", "No hi ha endpoints per mostrar");
     list.appendChild(em);
     return;
   }
@@ -223,7 +297,7 @@ function createEndpointDiv(e, index) {
   if (e.sensitive) {
     const badge = document.createElement("span");
     badge.className = "badge sensitive-badge";
-    badge.textContent = "SENSITIVE";
+    badge.textContent = i18n("sensitive", "SENSITIVE");
     methodLeft.appendChild(document.createTextNode(" "));
     methodLeft.appendChild(badge);
   }
@@ -235,8 +309,8 @@ function createEndpointDiv(e, index) {
     if (v) {
       const tb = document.createElement('span');
       tb.className = `tag-bubble tag-${t}`;
-      tb.textContent = TAG_DISPLAY_NAMES[t] || t.toUpperCase();
-      tb.title = TAG_DISPLAY_NAMES[t] || t.toUpperCase();
+      tb.textContent = i18n(`tag_${t}`, TAG_DISPLAY_NAMES[t] || t.toUpperCase());
+      tb.title = tb.textContent;
       tagsDiv.appendChild(tb);
     }
   });
@@ -245,7 +319,7 @@ function createEndpointDiv(e, index) {
   // Right part: hits
   const hitsDiv = document.createElement("div");
   hitsDiv.className = 'hits';
-  hitsDiv.textContent = `Hits: ${e.count}`;
+  hitsDiv.textContent = `${i18n("hits", "Hits")}: ${e.count}`;
   const methodRight = document.createElement('div');
   methodRight.className = 'method-right';
   methodRight.appendChild(hitsDiv);
@@ -257,21 +331,21 @@ function createEndpointDiv(e, index) {
   urlDiv.textContent = e.url;
 
   const paramsDiv = document.createElement("div");
-  paramsDiv.textContent = `Params: ${formatParams(e.params)}`;
+  paramsDiv.textContent = `${i18n("params", "Params")}: ${formatParams(e.params)}`;
 
   const exportBtn = document.createElement("button");
   exportBtn.className = "icon-btn export";
   exportBtn.dataset.index = index;
-  exportBtn.title = "Exporta";
-  exportBtn.setAttribute('aria-label', 'Exporta endpoint');
-  exportBtn.appendChild(EH.createSVGIcon('export', 16, 16, 'Exporta'));
+  exportBtn.title = i18n("export", "Exporta");
+  exportBtn.setAttribute('aria-label', exportBtn.title);
+  exportBtn.appendChild(EH.createSVGIcon('export', 16, 16, exportBtn.title));
 
   const copyBtn = document.createElement("button");
   copyBtn.className = "icon-btn copy";
   copyBtn.dataset.index = index;
-  copyBtn.title = "Copia";
-  copyBtn.setAttribute('aria-label', 'Copia endpoint');
-  copyBtn.appendChild(createSVGIcon('copy', 16, 16, 'Copia'));
+  copyBtn.title = i18n("copy", "Copia");
+  copyBtn.setAttribute('aria-label', copyBtn.title);
+  copyBtn.appendChild(createSVGIcon('copy', 16, 16, copyBtn.title));
 
   // Actions column (left): export above copy (more compact)
   const actionsDiv = document.createElement('div');
@@ -352,6 +426,7 @@ async function init() {
   allEndpoints = data.endpoints || [];
   log(`📊 ${allEndpoints.length} endpoints carregats`);
   await updateDomainFilter();
+  localizePage();
   render();
   log('✅ Panel inicialitzat');
 }
@@ -365,7 +440,7 @@ const toggleSensitiveBtn = document.getElementById("toggleSensitive");
 toggleSensitiveBtn.addEventListener("click", () => {
   showOnlySensitive = !showOnlySensitive;
   toggleSensitiveBtn.setAttribute('aria-pressed', String(showOnlySensitive));
-  toggleSensitiveBtn.title = showOnlySensitive ? "Mostra tots" : "Només sensibles";
+  toggleSensitiveBtn.title = showOnlySensitive ? i18n("btnAll", "Mostra tots") : i18n("btnSensitive", "Només sensibles");
   render();
 });
 
@@ -373,7 +448,7 @@ const toggleDomainBtn = document.getElementById("toggleDomain");
 toggleDomainBtn.addEventListener("click", async () => {
   showOnlyDomain = !showOnlyDomain;
   toggleDomainBtn.setAttribute('aria-pressed', String(showOnlyDomain));
-  toggleDomainBtn.title = showOnlyDomain ? "Mostrar tots dominis" : "Només domini";
+  toggleDomainBtn.title = showOnlyDomain ? i18n("btnAllDomains", "Mostrar tots dominis") : i18n("btnDomain", "Només domini");
   await updateDomainFilter();
   render();
 });
@@ -469,7 +544,8 @@ function initFilterButtons() {
     const btn = document.createElement('button');
     btn.className = `tag-filter-btn tag-${tag}`;
     btn.dataset.tag = tag;
-    btn.textContent = label;
+    btn.textContent = i18n(`tag_${tag}`, label);
+    btn.title = i18n(`filter_${tag}`, `Filtra per ${label}`);
     btn.setAttribute('aria-pressed', String(activeTags.has(tag)));
     btn.addEventListener('click', () => {
       if (activeTags.has(tag)) activeTags.delete(tag);
