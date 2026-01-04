@@ -1,91 +1,89 @@
 # Endpoint Hunter 🕵️‍♂️
 
-**Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles. Només has d'anar a la pàgina web i activar l'extensió, veuràs que apareixen endpoints de forma automàtica, els podràs filtrar amb el cercador o les etiquetes inteligents i exportar-ho amb un sol clic.
+**Endpoint Hunter** is a Firefox extension designed to detect and analyze web application endpoints and parameters while you browse them. You just need to visit a website and enable the extension; endpoints will automatically appear. You can filter them using the search bar or smart tags and export everything with a single click.
 
-Està pensada com a eina d’ajuda per a:
-- 🔒 Pentesting autoritzat
+It is intended as a support tool for:
+- 🔒 Authorized pentesting
 - 🐞 Bug bounty
-- 🛡️ Formació en seguretat web
-- 🌐 Anàlisi d’aplicacions web modernes
+- 🔒 Ethical hackers
+- 🛡️ Web security training
+- 🌐 Modern web application analysis
 
 ---
 
-## 🚀 Funcionalitats
+## 🚀 Features
 
-- 🖥️ Interfície integrada en navegador, no intrusiva
-- 🪶 Lleuger, no afecta al rendiment del navegador web
-- 🎁 Detecció automàtica d’endpoints GET i POST
-- 🚩 Identificació d’endpoints potencialment sensibles
-- 🎯 Filtre per mostrar només endpoints sensibles i/o del mateix domini
-- 🏷️ Etiquetes automàtiques en endpoints, filtratge de resultats
-- 🔍 Cercador d'endpoints detectats per concepte i paràmetres
-- 📋 Còpia d’un endpoint individual
-- 📋 Còpia de tots els endpoints visibles
-- 📤 Exportació d’endpoints en format JSON
-- 📊 Comptador de hits per endpoint
+- 🖥️ Integrated, non-intrusive browser interface (devtools panel)
+- 🪶 Lightweight, no impact on browser performance  
+- 🎁 Automatic detection of GET and POST endpoints (headers) 
+- 🚩 Identification of potentially sensitive endpoints  
+- 🎯 Filter to show only sensitive endpoints and/or same-domain endpoints  
+- 🏷️ Automatic endpoint tagging, result filtering  
+- 🔍 Search detected endpoints by concept and parameters  
+- 📋 Copy a single endpoint  
+- 📋 Copy all visible endpoints  
+- 📤 Export endpoints in JSON format  
+- 📊 Hit counter per endpoint  
 
 ---
 
-## 🧪 Exemples d’ús
+## 🧪 Use cases
 
-- Identificar rutes ocultes en aplicacions SPA
-- Detectar formularis de login o endpoints d’autenticació
-- Analitzar paràmetres interessants per testing manual
-- Enumeració d'enllaços amagats (rutes) i mètodes HTTP
-- Preparar endpoints per importar-los a Burp o altres eines per detectar vulnerabilitats com Dalfox o Nuclei
+- Identify hidden routes in SPA applications  
+- Detect login forms or authentication endpoints  
+- Analyze interesting parameters for manual testing  
+- Enumeration of hidden links (routes) and HTTP methods  
+- Prepare endpoints to import into Burp or other tools to detect vulnerabilities such as Dalfox or Nuclei  
 
 ---
 
 ## ⚠️ Disclaimer
 
-> Aquesta extensió està pensada **únicament** per a finalitats educatives i per a proves de seguretat **autoritzades**.
+> This extension is intended **only** for educational purposes and **authorized** security testing.
 >
-> L’ús d’aquesta eina contra aplicacions sense permís explícit pot ser il·legal.
-> L’autor no es fa responsable de l’ús indegut del programari.
+> Using this tool against applications without explicit permission may be illegal.  
+> The author is not responsible for any misuse of the software.
 
 ---
 
-## Captures de pantalla
+## Screenshots
 
 ### Dark mode
 ![dark mode](screenshots/dark-mode.png) ![light mode](screenshots/light-mode.png)
 
-### Endpoints detectats amb informació sensible
+### Detected endpoints with sensitive information
 ![interesting endpoints](screenshots/endpoints-sensible.png)
 
-### Endpoints detectats amb info sensible i del mateix domini
+### Detected endpoints with sensitive info from the same domain
 ![endpoints from domain](screenshots/endpoints-sensible-domain.png)
 
-### Filtres d'endpoints segons possible vulnerabilitat
+### Endpoint filters by potential vulnerability
 ![vulns](screenshots/filter-endpoints-tags.png) ![TAGs](screenshots/filter-endpoints-tags2.png)
 
-### Cercant conceptes en endpoints trobats
+### Searching for concepts in detected endpoints
 ![Search filter](screenshots/find-endpoints.png)
 
-### Exportant al portaretalls del sistema
+### Exporting to the system clipboard
 ![Export & copy](screenshots/export-copy.png)
 
-## 🛠 Instal·lació (desenvolupament)
+---
 
-1. Clona el repositori:
+## 🛠 Installation (development)
+1. Clone the repository:
    ```bash
    git clone https://github.com/carlesreig/endpoint-hunter.git
 
-2. Obre Firefox i ves a:
+2. Open Firefox and go to:
     ```bash
     about:debugging#/runtime/this-firefox
 
-3. Carrega  `manifest.json`
+3. Load  `manifest.json`
 
-4. Prem <kbd>F12</kbd> o bé <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> `Developer Tools` i selecciona l'extensió "Endpoint Hunter".
+4. Press <kbd>F12</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> to open `Developer Tools` and select the “Endpoint Hunter” extension..
 
-## 🤝 Contribucions
+## 🤝 Contributions
 
-Les contribucions són benvingudes!
-Obre un Issue per bugs o propostes.
-Fes un Pull Request per noves funcionalitats.
-Marca els canvis de manera clara.
-
-## 📄 Llicència
-
-[Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/) (MPL 2.0)
+Contributions are welcome!
+Open an Issue for bugs or suggestions.
+Submit a Pull Request for new features.
+Clearly document your changes.
