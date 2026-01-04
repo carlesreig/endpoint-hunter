@@ -1,3 +1,6 @@
+🌍 **Idioma**:
+[English](README.md) · [Català](README.ca.md) · [Español](README.es.md)
+
 # Endpoint Hunter 🕵️‍♂️
 
 **Endpoint Hunter** és una extensió per a Firefox dissenyada per detectar i analitzar endpoints i paràmetres d’aplicacions web mentre navegues per elles. Només has d'anar a la pàgina web i activar l'extensió, veuràs que apareixen endpoints de forma automàtica, els podràs filtrar amb el cercador o les etiquetes inteligents i exportar-ho amb un sol clic.
