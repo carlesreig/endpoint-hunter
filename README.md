@@ -1,3 +1,6 @@
+🌍 **Language**:
+[English](README.md) · [Català](README.ca.md) · [Español](README.es.md)
+
 <img width="1280" height="640" alt="header github" src="https://github.com/user-attachments/assets/a68d8ba9-77af-4a71-b8c1-69f6b94c82ec" />
 
 # Endpoint Hunter 🕵️‍♂️
